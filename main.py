@@ -10,6 +10,7 @@ def min_filter_custom(img, ksize):
 
 def estimate_atmospheric_light(img):
     # Paper: Downsample by 2
+    img = cv2.resize(img,(300,225))
     h, w = img.shape[:2]
     # ds_img = cv2.resize(img, (w//2, h//2), interpolation=cv2.INTER_NEAREST)
     ds_img = img
@@ -86,20 +87,21 @@ def dehaze(img):
     
     D = np.clip(D, 0, 1)
     
-    return (D * 255).astype(np.uint8), t
+    return (D * 255).astype(np.uint8), t, S_H
 
 if __name__ == "__main__":
     # Generate Input
     input_img = cv2.imread("haze.jpg").astype(np.uint8) # Small size for faster sim
-    input_img = cv2.resize(input_img,(320,240))
-    cv2.imwrite("input.png", input_img)
-    cv2.imwrite("input.ppm", input_img) # For C++ sim
+    
+    # cv2.imwrite("input.png", input_img)
+    # cv2.imwrite("input.ppm", input_img) # For C++ sim
     print("Generated input.png and input.ppm")
     
     # Run Dehazing
-    output_img, trans_map = dehaze(input_img)
+    output_img, trans_map, sat_map = dehaze(input_img)
     
     cv2.imwrite("golden_output.png", output_img)
     cv2.imwrite("golden_output.ppm", output_img) # For C++ sim
     cv2.imwrite("transmission.png", (trans_map * 255).astype(np.uint8))
-    print("Generated golden_output.png/ppm and transmission.png")
+    cv2.imwrite("saturation.png", (sat_map * 255).astype(np.uint8))
+    print("Generated golden_output.png/ppm, transmission.png and saturation.png")

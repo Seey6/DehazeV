@@ -2,8 +2,8 @@ module calc_t (
         input wire clk,
         input wire rst_n,
 
-        input wire [11:0] S_H,      // Q12
-        input wire [11:0] S_D,      // Q12
+        input wire [11:0] S_H,      // Q0.12
+        input wire [11:0] S_D,      // Q0.12
         input wire [11:0] K_Hn125,  // Q4.8
         input wire        in_valid,
 
@@ -90,13 +90,20 @@ module calc_t (
             // --- Pipe 0 Input ---
             if(in_valid) begin
                 // 【修正2】: 增加下溢保护
-                if (S_D >= S_H)
-                    SHsubSD <= S_D - S_H; //Q0.12
-                else
-                    SHsubSD <= 12'd0; // 保护：如果不应该发生，设为0
+                if(S_D == 0 || S_H==0) begin
+                    SHsubSD <= 12'd2048;
+                    S_D_d1 <= 12'd2048;
+                end
+                else begin
+                    S_D_d1 <= S_D;
+                    if (S_D >= S_H)
+                        SHsubSD <= S_D - S_H; //Q0.12
+                    else
+                        SHsubSD <= 12'd0; // 保护：如果不应该发生，设为0
+                end
+
 
                 K_Hn125_d1 <= K_Hn125; //Q4.8
-                S_D_d1     <= S_D; //Q0.12
             end
 
             // --- Pipe 1 (Stage 5 Part A) ---

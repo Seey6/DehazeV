@@ -1,4 +1,6 @@
 MODULE=dehaze_top
+IMG_WIDTH=600
+IMG_HEIGHT=450
 
 .PHONY: sim
 sim: waveform.vcd
@@ -8,6 +10,9 @@ verilat: .stamp.verilat
 
 .stamp.verilat: rtl/*.v sim/sim_main.cpp
 	verilator -cc --exe --build -j 4 -Wall --trace \
+		-LDFLAGS "-lopencv_core -lopencv_imgproc -lopencv_imgcodecs" \
+		-CFLAGS "$(shell pkg-config --cflags opencv4)" \
+		-GWIDTH=$(IMG_WIDTH) -GHEIGHT=$(IMG_HEIGHT) \
 		-Irtl \
 		sim/sim_main.cpp rtl/$(MODULE).v \
 		--top-module $(MODULE) \

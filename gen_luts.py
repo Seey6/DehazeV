@@ -29,7 +29,7 @@ def formula_inv_khn(addr):
     if addr == 0: return 4095 # 防止除零，返回 Q4.8 最大值
     
     # 公式: 65536 / addr
-    val = (1 << 16) / addr
+    val = (1 << 12) / addr
     return int(round(val))
 
 def formula_inv_t(addr):
