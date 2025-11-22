@@ -1,0 +1,7 @@
+*.vcd
+*.view
+*.ppm
+*.log
+*.bin
+obj_dir
+.venv
