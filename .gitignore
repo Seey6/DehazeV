@@ -5,3 +5,7 @@
 *.bin
 obj_dir
 .venv
+*.png
+*.jpg
+*.zip
+.stamp*

@@ -29,9 +29,9 @@ test_min3x3: .stamp.min3x3
 	@echo "Waveform saved to waveform.vcd"
 	@echo "View with: gtkwave waveform.vcd"
 
-.stamp.min3x3: rtl/min_filter_3x3.v sim/sim_min_filter_3x3.cpp
+.stamp.min3x3: rtl/min_filter_3x3.v sim/sim_min_filter_3x3.cpp rtl/line_buffer.v
 	verilator -cc --exe --build -j 4 -Wall --trace \
-		sim/sim_min_filter_3x3.cpp rtl/min_filter_3x3.v \
+		sim/sim_min_filter_3x3.cpp rtl/min_filter_3x3.v rtl/line_buffer.v \
 		--top-module min_filter_3x3 \
 		-o min_filter_3x3
 	touch .stamp.min3x3
