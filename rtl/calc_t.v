@@ -115,9 +115,12 @@ module calc_t (
                     // 只要比 S_D (最大 1.0) 大，下一级的减法保护就会生效
                     Khn125mulSHsubSD <= 12'hFFF;
                 end
-                else begin
+                else if(|wire_Khn125mulSHsubSD[19:8] ) begin
                     // 没有整数位，安全截取小数部分 [19:8] (对应 Q0.12)
                     Khn125mulSHsubSD <= wire_Khn125mulSHsubSD[19:8];
+                end
+                else begin
+                    Khn125mulSHsubSD <= 12'b1;
                 end
                 S_D_d2           <= S_D_d1;//Q0.12
             end

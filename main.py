@@ -100,6 +100,7 @@ if __name__ == "__main__":
     # Run Dehazing
     output_img, trans_map, sat_map = dehaze(input_img)
     print("Min trans: ", np.min(trans_map))
+    print("Min sat: ", np.min(sat_map))
     
     cv2.imwrite("golden_output.png", output_img)
     cv2.imwrite("golden_output.ppm", output_img) # For C++ sim

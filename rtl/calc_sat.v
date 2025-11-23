@@ -120,12 +120,19 @@ module calc_sat (
                 K_Hn_d2 <= K_Hn_d1 / 3;
                 if (|sh_mult_res[23:12])
                     S_H_d1 <= 12'hFFF;
-                else
+                else if(|sh_mult_res[11:0])
                     // 提取 [15:4] 作为 Q0.12 的结果
                     S_H_d1 <= sh_mult_res[11:0];
+                else
+                    S_H_d1 <= 12'b1;
             end
             if(in_valid_pipe[5]) begin
-                S_D_d1 <= wire_S_D[23:12];
+                if(|wire_S_D[23:13]) begin
+                    S_D_d1 <= wire_S_D[23:12];
+                end
+                else begin
+                    S_D_d1 <= 12'b10;
+                end
                 K_Hn_d3 <= K_Hn_d2;
                 S_H_d2 <= S_H_d1;
             end
