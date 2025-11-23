@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     tfp->open("waveform.vcd");
 
     // Read Input Image using OpenCV
-    cv::Mat input_img = cv::imread("haze.jpg", cv::IMREAD_COLOR);
+    cv::Mat input_img = cv::imread("foggy_bench.jpg", cv::IMREAD_COLOR);
     if (input_img.empty()) {
         std::cerr << "Error: Could not read haze.jpg" << std::endl;
         return 1;
@@ -116,9 +116,16 @@ int main(int argc, char** argv) {
                 // pixel = t * 255
                 unsigned char t_val = 0;
                 if (top->out_inv_t > 0) {
-                    double t = 256.0 / (double)top->out_inv_t;
-                    if (t > 1.0) t = 1.0;
-                    t_val = (unsigned char)(t * 255.0);
+                    double real_inv_t = (double)top->out_inv_t / 256.0;
+                    double real_t = (double)1.0/real_inv_t;
+                    if(real_t > 1.0){
+                        real_t = 1.0;
+                    }
+                    // if (t > 1.0) t = 1.0;
+                    t_val = (unsigned char)(real_t * 255.0);
+                    if(t_val>255){
+                        t_val=255;
+                    }
                 }
                 transmission_img.at<unsigned char>(out_pixel_idx / width, out_pixel_idx % width) = t_val;
 

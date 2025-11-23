@@ -10,10 +10,10 @@ def min_filter_custom(img, ksize):
 
 def estimate_atmospheric_light(img):
     # Paper: Downsample by 2
-    img = cv2.resize(img,(300,225))
+    # img = cv2.resize(img,(300,225))
     h, w = img.shape[:2]
-    # ds_img = cv2.resize(img, (w//2, h//2), interpolation=cv2.INTER_NEAREST)
-    ds_img = img
+    ds_img = cv2.resize(img, (w//2, h//2))
+    # ds_img = img
     # Paper: 15x15 min filter on downsampled image
     min_img = min_filter_custom(ds_img, 7)
     
@@ -91,7 +91,7 @@ def dehaze(img):
 
 if __name__ == "__main__":
     # Generate Input
-    input_img = cv2.imread("haze.jpg").astype(np.uint8) # Small size for faster sim
+    input_img = cv2.imread("foggy_bench.jpg").astype(np.uint8) # Small size for faster sim
     
     # cv2.imwrite("input.png", input_img)
     # cv2.imwrite("input.ppm", input_img) # For C++ sim
@@ -99,6 +99,7 @@ if __name__ == "__main__":
     
     # Run Dehazing
     output_img, trans_map, sat_map = dehaze(input_img)
+    print("Min trans: ", np.min(trans_map))
     
     cv2.imwrite("golden_output.png", output_img)
     cv2.imwrite("golden_output.ppm", output_img) # For C++ sim

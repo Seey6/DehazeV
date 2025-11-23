@@ -114,10 +114,10 @@ module calc_sat (
             if(in_valid_pipe[3]) begin
                 // inv_khn should <= inv(khn)
                 khn_sub_min3 <= K_Hn - minTri;
-                K_Hn_d1 <= K_Hn + (K_Hn >> 2) / 3;
+                K_Hn_d1 <= K_Hn + (K_Hn >> 2);
             end
             if(in_valid_pipe[4]) begin
-                K_Hn_d2 <= K_Hn_d1;
+                K_Hn_d2 <= K_Hn_d1 / 3;
                 if (|sh_mult_res[23:12])
                     S_H_d1 <= 12'hFFF;
                 else

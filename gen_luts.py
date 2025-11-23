@@ -39,10 +39,10 @@ def formula_inv_t(addr):
     输出: Q4.12 格式 -> round(2^24 / addr)
     逻辑: 1 / (addr/4096) * 4096 = 16,777,216 / addr
     """
-    if addr == 0: return 65535 # 防止除零，返回 Q4.12 最大值 (约15.99)
+    if addr == 0: return 1<<12 # 防止除零，返回 Q4.12 最大值 (约15.99)
     
     # 公式: 2^24 / addr
-    val = (1 << 24) / addr
+    val = (1 << 12) / addr
     return int(round(val))
 
 # ------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ lut_configs = [
     {
         "name": "lut_inv12",
         "addr_width": 12,
-        "data_width": 16, # Q4.12 (支持 >1.0 的倒数)
+        "data_width": 12, # Q4.8 (支持 >1.0 的倒数)
         "formula": formula_inv_t,
         "desc": "Calculates 1/Denominator (Q0.12 Input -> Q4.12 Output)"
     }

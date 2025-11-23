@@ -49,8 +49,9 @@ module calc_t (
     // ----------------------------------------------------
 
     // 【修正1】: 必须定义为 wire
-    wire [15:0] inv_SDsub125; //Q4.12
-
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [11:0] inv_SDsub125; //Q8.12
+    /* verilator lint_on UNUSEDSIGNAL */
     // LUT Instantiation (Assumes Latency = 1 cycle)
     // Logic: Addr valid @ Pipe 2 -> Data valid @ Pipe 3
     lut_inv12 u_lut_inv12(
@@ -64,8 +65,8 @@ module calc_t (
     wire [23:0] wire_Khn125mulSHsubSD;//Q4.20
     assign wire_Khn125mulSHsubSD = K_Hn125_d1 * SHsubSD;
 
-    wire [27:0] wire_inv_t_tmp;
-    assign wire_inv_t_tmp = inv_SDsub125 * S_D_d4; //Q4.20
+    wire [23:0] wire_inv_t_tmp;
+    assign wire_inv_t_tmp = inv_SDsub125 * S_D_d4;
     /* verilator lint_on UNUSEDSIGNAL */
 
     // ----------------------------------------------------
@@ -90,17 +91,17 @@ module calc_t (
             // --- Pipe 0 Input ---
             if(in_valid) begin
                 // 【修正2】: 增加下溢保护
-                if(S_D == 0 || S_H==0) begin
-                    SHsubSD <= 12'd2048;
-                    S_D_d1 <= 12'd2048;
-                end
-                else begin
-                    S_D_d1 <= S_D;
-                    if (S_D >= S_H)
-                        SHsubSD <= S_D - S_H; //Q0.12
-                    else
-                        SHsubSD <= 12'd0; // 保护：如果不应该发生，设为0
-                end
+                // if(S_D == 0 || S_H==0) begin
+                //     SHsubSD <= 12'd2048;
+                //     S_D_d1 <= 12'd2048;
+                // end
+                // else begin
+                S_D_d1 <= S_D;
+                if (S_D >= S_H)
+                    SHsubSD <= S_D - S_H; //Q0.12
+                else
+                    SHsubSD <= 12'd0; // 保护：如果不应该发生，设为0
+                // end
 
 
                 K_Hn125_d1 <= K_Hn125; //Q4.8
@@ -128,7 +129,7 @@ module calc_t (
                 if (S_D_d2 >= Khn125mulSHsubSD)
                     SDsubKhn125mulSHsubSD <= S_D_d2 - Khn125mulSHsubSD;//Q0.12
                 else
-                    SDsubKhn125mulSHsubSD <= 12'd1; // 防止分母为0或负数，给最小正数
+                    SDsubKhn125mulSHsubSD <= 12'd0; // 防止分母为0或负数，给最小正数
 
                 S_D_d3 <= S_D_d2;
             end
@@ -143,7 +144,15 @@ module calc_t (
             if(in_valid_pipe[3]) begin
                 // inv_SDsub125 is valid here (LUT output)
                 // Calculate: S_D * (1/Denominator)
-                inv_t_tmp <= wire_inv_t_tmp[27:16];
+                if(|wire_inv_t_tmp[23:16]) begin
+                    inv_t_tmp <= 12'hfff;
+                end
+                if(|wire_inv_t_tmp[15:12]) begin
+                    inv_t_tmp <= wire_inv_t_tmp[15:4];
+                end
+                else begin
+                    inv_t_tmp <= 12'h100;
+                end
             end
 
             // --- Output ---

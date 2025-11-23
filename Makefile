@@ -1,6 +1,6 @@
 MODULE=dehaze_top
-IMG_WIDTH=600
-IMG_HEIGHT=450
+IMG_WIDTH=800
+IMG_HEIGHT=600
 
 .PHONY: sim
 sim: waveform.vcd
